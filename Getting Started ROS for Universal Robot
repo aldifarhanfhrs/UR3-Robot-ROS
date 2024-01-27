@@ -1,0 +1,63 @@
+Getting Started ROS (Robotic Operating Systems)
+
+by Aldi Farhan Fahrosa
+Instrumentation, Brawijaya University
+
+Instalasi Robot 
+Link Rujukan --> https://github.com/UniversalRobots/Universal_Robots_ROS_Driver
+
+1. Install ROS pada device yang digunakan untuk ubuntu 20.04 gunakan ROS Noetic
+   Link Rujukan http://wiki.ros.org/noetic/Installation/Ubuntu
+2. Setup your sources.list
+   >> sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+3. Set up your keys
+   >> sudo apt install curl # if you haven't already installed curl
+   >> curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+4. Installation
+   >> sudo apt update
+   >> sudo apt install ros-noetic-desktop-full
+5. Environment Setup
+   >> source /opt/ros/noetic/setup.bash
+   >> echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+      source ~/.bashrc
+6. Dependencies for building packages
+   >> sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+   
+   Initialize Rosdep
+   >> sudo apt install python3-rosdep
+   >> sudo rosdep init
+   >> rosdep update
+
+7. Instalasi Driver ( Link Rujukan -> https://github.com/ros-industrial/universal_robot)
+   >> sudo apt-get install ros-noetic-universal-robots
+
+Building From Source
+
+1. Buat Catkin Workspace (Link Rujukan --> https://wiki.ros.org/catkin/Tutorials/create_a_workspace)
+   >> source /opt/ros/noetic/setup.bash
+   >> mkdir -p ~/catkin_ws/src
+   >> cd ~/catkin_ws/
+   >> catkin_make
+   >> source devel/setup.bash
+2. Build from sources in a Catkin workspace 
+   >> cd $HOME/catkin_ws/src
+   >> git clone -b noetic-devel https://github.com/ros-industrial/universal_robot.git
+   >> cd $HOME/catkin_ws
+   >> rosdep update
+   >> rosdep install --rosdistro $ROS_DISTRO --ignore-src --from-paths src
+   >> catkin_make #building
+   >> source $HOME/catkin_ws/devel/setup.bash # Activate Workspace
+3. Gazebo Simulation 
+   - Buka Terminal 1 
+     >> roscore (Opsional, langsung ke Terminal 2, Pastikan running di catkin_ws)
+   - Buka Terminal 2
+     >> roslaunch ur_gazebo ur3_bringup.launch
+   - Buka Terminal 3
+     >> roslaunch ur3_moveit_config moveit_planning_execution.launch sim:=true
+   - Buka Terminal 4 
+     >> roslaunch ur3_moveit_config moveit_rviz.launch
+     
+4. Real Universal Robot UR3CB
+   
+
+   
