@@ -6,7 +6,7 @@ Instrumentation, Brawijaya University
 Instalasi Robot 
 Link Rujukan --> https://github.com/UniversalRobots/Universal_Robots_ROS_Driver
 
-1. Install ROS pada device yang digunakan untuk ubuntu 20.04 gunakan ROS Noetic
+1. Install ROS pada device yang digunakan, untuk ubuntu 20.04 gunakan ROS Noetic
    Link Rujukan http://wiki.ros.org/noetic/Installation/Ubuntu
 2. Setup your sources.list
    >> sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -49,15 +49,25 @@ Building From Source
    >> source $HOME/catkin_ws/devel/setup.bash # Activate Workspace
 3. Gazebo Simulation 
    - Buka Terminal 1 
-     >> roscore (Opsional, langsung ke Terminal 2, Pastikan running di catkin_ws)
+     >> roscore (Opsional, langsung ke Terminal 2, Pastikan running di catkin_ws dengan cd ~/catkin_ws && catkin_make)
    - Buka Terminal 2
      >> roslaunch ur_gazebo ur3_bringup.launch
    - Buka Terminal 3
      >> roslaunch ur3_moveit_config moveit_planning_execution.launch sim:=true
    - Buka Terminal 4 
      >> roslaunch ur3_moveit_config moveit_rviz.launch
+
+4. Install Commander Moveit (untuk menjalankan UR dengan Python)
+   >> sudo apt-get install ros-noetic-moveit
+   >> rosrun ur3_moveit ur3_move.py
      
-4. Real Universal Robot UR3CB
-   
+5. Real Universal Robot UR3CB
+   >> roslaunch ur_calibration calibration_correction.launch robot_ip:=192.168.1.107 target_filename:="$(rospack find ur_calibration)/etc/ex-ur3_calibration.yaml"
+
+   >> roslaunch ur_robot_driver ur3_bringup.launch robot_ip:=192.168.1.107 [reverse_port:=REVERSE_PORT] kinematics_config:=$(rospack find ur_calibration)/etc/ex-ur3_calibration.yaml
+
+   >> roslaunch ur3_moveit_config moveit_planning_execution.launch limited:=true
+
+   >> roslaunch ur3_moveit_config moveit_rviz.launch config:=true
 
    
