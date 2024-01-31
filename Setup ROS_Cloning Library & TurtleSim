@@ -1,4 +1,10 @@
 ### Clone github C++ repository
+>> gedit .bashrc
+# jadikan 
+source /opt/ros/noetic/setup.bash
+source /home/individual2/catkin_ws/devel/setup.bash
+
+----------------------------------------------------------------------------------------------------
 
 >> source .bashrc
 >> cd ..
@@ -55,7 +61,6 @@ rostopic pub -r 10 /turtle1/cmd_vel geometry_msgs/Twist '{linear: {x: 0.1, y: 0.
 >> rosnode info /teleop_turtle
 >> rosmsg show geometry_msgs/Twist
 >> rosmsg show turtlesim/Pose
-
 
 
 
