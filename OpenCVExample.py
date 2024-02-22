@@ -1,14 +1,21 @@
-import cv2
-import numpy as np
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import cv2
+import numpy as np
 from geometry_msgs.msg import Pose
+from moveit_commander import RobotCommander, PlanningSceneInterface, MoveGroupCommander
+
 
 class ObjectDetectionAndControl:
     def __init__(self):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/camera/image_raw", Image, self.image_callback)
+
+        # Inisialisasi MoveIt
+        self.robot = RobotCommander()
+        self.scene = PlanningSceneInterface()
+        self.group = MoveGroupCommander("manipulator")
 
     def image_callback(self, data):
         try:
@@ -39,7 +46,7 @@ class ObjectDetectionAndControl:
                 # Hitung posisi sudut kemiringan dan ubah menjadi posisi end effector UR
                 end_effector_position = self.calculate_end_effector_position(angle)
                 
-                # Kirim perintah gerakan ke robot UR3 menggunakan ROS-Industrial
+                # Rencanakan dan eksekusi pergerakan end effector menggunakan MoveIt
                 self.move_end_effector(end_effector_position)
 
         except CvBridgeError as e:
@@ -55,10 +62,13 @@ class ObjectDetectionAndControl:
         return end_effector_position
 
     def move_end_effector(self, end_effector_position):
-        # Kirim perintah gerakan ke robot UR3 menggunakan ROS-Industrial
-        # Anda perlu menyesuaikan ini sesuai dengan cara mengontrol robot UR3 Anda
-        # Misalnya, menggunakan ROS-Industrial atau API yang disediakan oleh produsen
-        pass
+        # Rencanakan pergerakan end effector
+        self.group.set_pose_target(end_effector_position)
+        plan = self.group.plan()
+
+        # Eksekusi pergerakan
+        self.group.go(wait=True)
+
 
 def main():
     rospy.init_node('object_detection_and_control_node')
