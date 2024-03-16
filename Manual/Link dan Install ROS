@@ -1,0 +1,13 @@
+Install ROS
+
+Link:
+https://www.oreilly.com/library/view/mastering-ros-for/9781788478953/59c2778e-bb17-44e8-89be-76ebefbbc6d1.xhtml
+
+https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#extract-calibration-information
+
+https://github.com/UniversalRobots/Universal_Robots_ROS_Driver
+
+1. https://github.com/UniversalRobots/Universal_Robots_ROS_Driver
+2. https://moveit.ros.org/install/
+3. sudo apt install ros-noetic-moveit-visual-tools
+4. sudo apt install ros-noetic-rviz
