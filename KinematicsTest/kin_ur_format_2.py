@@ -220,6 +220,7 @@ def inv_kin(p, q_d, i_unit='r', o_unit='r'):
 
     # Initialization of a set of feasible solutions
     theta = np.zeros((8, 6))
+    #theta = [[0 for _ in range (6)] for _ in range(8)] 
 
     # theta1
     P_05 = T_06[0:3, 3] - d6 * T_06[0:3, 2]
@@ -239,8 +240,9 @@ def inv_kin(p, q_d, i_unit='r', o_unit='r'):
         theta[2*i+1, 4] = -theta5[0]
         theta[2*i+4, 4] = theta5[1]
         theta[2*i+5, 4] = -theta5[1]
-  
+
     # theta6
+        # theta6
     T_60 = np.linalg.inv(T_06)
     theta6 = []
     for i in range(2):
@@ -248,14 +250,19 @@ def inv_kin(p, q_d, i_unit='r', o_unit='r'):
             s1 = sin(theta1[i])
             c1 = cos(theta1[i])
             s5 = sin(theta5[j])
-            theta6.append(atan2((-T_60[1, 0] * s1 + T_60[1, 1] * c1) / s5, (T_60[0, 0] * s1 - T_60[0, 1] * c1) / s5))
+            # Handling division by zero
+            if s5 != 0:
+                theta6.append(atan2((-T_60[1, 0] * s1 + T_60[1, 1] * c1) / s5, (T_60[0, 0] * s1 - T_60[0, 1] * c1) / s5))
+            else:
+                # Assign a default value or handle this case based on your specific requirement
+                theta6.append(0)  # For example, assigning 0 as a default value
     for i in range(2):
         theta[i, 5] = theta6[0]
         theta[i+2, 5] = theta6[1]
         theta[i+4, 5] = theta6[2]
         theta[i+6, 5] = theta6[3]
 
-    # theta3, theta2, theta4 kontol
+    # theta3, theta2, theta4
     for i in range(8):  
         # theta3
         T_46 = HTM(4, theta[i]) * HTM(5, theta[i])
@@ -278,9 +285,9 @@ def inv_kin(p, q_d, i_unit='r', o_unit='r'):
 
     # Output format
     if o_unit == 'r': # (unit: radian)
-        return q_sol
+        return theta
     elif o_unit == 'd': # (unit: degree)
-        return [degrees(i) for i in q_sol]
+        return [[degrees(angle) for angle in solution] for solution in theta]
     
     print(theta)
 
@@ -297,11 +304,56 @@ print("\n")"""
 #forward kinematics
 from math import radians
 
-#joint_values = [radians(90), radians(-90), radians(90), radians(-90), radians(-90), radians(-1)]
-joint_values = [radians(-140), radians(-90), radians(1), radians(-90), radians(1), radians(1)]
+#input
+#joint_values = [radians(25), radians(-64), radians(49), radians(-102), radians(-92), radians(327)]
+joint_values = [radians(82.75), radians(-59.75), radians(59.45), radians(188.15), radians(-77.45), radians(131.45)]
 
 result = fwd_kin(joint_values, i_unit='r', o_unit='p')  # Menggunakan 'p' untuk output format ROS Pose
 
+print("ROS Pose hasil forward kinematics:")
+print(result)
+
+print("\n")
+#inversekinematics
+resultinv = inv_kin(result, joint_values, i_unit='r', o_unit='r')
+result_degree = inv_kin(result, joint_values, i_unit='r', o_unit='d')
+
+#Result In Radian
+print('8 Solution in Radian')
+print("[")
+for sublist in resultinv:
+    print("[", end=" ")
+    for i, value in enumerate(sublist):
+        # Print float values with higher precision
+        if isinstance(value, float):
+            if i == len(sublist) - 1:
+                print("{:.15f}".format(value), end=" ")
+            else:
+                print("{:.15f}".format(value), end=", ")
+        else:
+            print(value, end=", ")
+    print("],")  # Add a closing square bracket and comma for each sublist
+print("]")
+
+print("\n")
+#Result in Degree
+print('8 Solution in Degree:')
+print("[")
+for sublist in result_degree:
+    print("[", end=" ")
+    for i, value in enumerate(sublist):
+        # Print float values with higher precision
+        if isinstance(value, float):
+            if i == len(sublist) - 1:
+                print("{:.15f}".format(value), end=" ")
+            else:
+                print("{:.15f}".format(value), end=", ")
+        else:
+            print(value, end=", ")
+    print("],")  # Add a closing square bracket and comma for each sublist
+print("]")
+
+################################################################################
 print("ROS Pose hasil forward kinematics:")
 print(result)
 
@@ -315,3 +367,4 @@ print(resultinv)
 print("\n")
 print(result_degree)
 print("\n")
+
