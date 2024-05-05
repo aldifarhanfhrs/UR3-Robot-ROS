@@ -239,7 +239,7 @@ def inv_kin(p, q_d, i_unit='r', o_unit='r'):
         theta[2*i+1, 4] = -theta5[0]
         theta[2*i+4, 4] = theta5[1]
         theta[2*i+5, 4] = -theta5[1]
-  
+
     # theta6
     T_60 = np.linalg.inv(T_06)
     theta6 = []
@@ -255,7 +255,7 @@ def inv_kin(p, q_d, i_unit='r', o_unit='r'):
         theta[i+4, 5] = theta6[2]
         theta[i+6, 5] = theta6[3]
 
-    # theta3, theta2, theta4 kontol
+    # theta3, theta2, theta4
     for i in range(8):  
         # theta3
         T_46 = HTM(4, theta[i]) * HTM(5, theta[i])
@@ -297,8 +297,8 @@ print("\n")"""
 #forward kinematics
 from math import radians
 
-#joint_values = [radians(90), radians(-90), radians(90), radians(-90), radians(-90), radians(-1)]
-joint_values = [radians(41), radians(271), radians(-90), radians(-90), radians(-271), radians(-84)]
+#joint_values = [radians(25), radians(-64), radians(49), radians(-102), radians(-92), radians(327)]
+joint_values = [radians(82.75), radians(-59.75), radians(59.45), radians(188.15), radians(-77.45), radians(131.45)]
 
 result = fwd_kin(joint_values, i_unit='r', o_unit='p')  # Menggunakan 'p' untuk output format ROS Pose
 
