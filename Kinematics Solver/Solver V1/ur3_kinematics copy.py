@@ -144,51 +144,15 @@ def fwd_kin(theta, i_unit='r', o_unit='n'):
         print("Forward Kinematics Result:")
         print(T_06)  
 
-#joint_values = [radians(5), radians(-57), radians(45), radians(15), radians(5), radians(5)]
-#joint_values = [radians(-62), radians(-110), radians(-79), radians(-35), radians(90), radians(45)] singular
-#joint_values = [radians(-62), radians(-35), radians(-121), radians(-66), radians(102), radians(53)] ribet
-joint_values = [radians(-80), radians(-120), radians(-41), radians(-185), radians(-82), radians(0)] 
-
+joint_values = [radians(5), radians(-57), radians(45), radians(15), radians(5), radians(5)]
 #Hasil Forward Kinematics Hitung Manual
 result_fk = fwd_kin(joint_values, i_unit='r', o_unit='p')
 result_htm = fwd_kin(joint_values, i_unit='r', o_unit='n')   # Menggunakan 'p' untuk output format ROS Pose
-
-position_rounded = [round(result_fk.position.x, 6), round(result_fk.position.y, 6), round(result_fk.position.z, 6)]
-orientation_rounded = [round(result_fk.orientation.x, 6), round(result_fk.orientation.y, 6), round(result_fk.orientation.z, 6), round(result_fk.orientation.w, 6)]
-
-# Create a new ROS Pose object with rounded values
-result_fk_rounded = Pose()
-result_fk_rounded.position.x = position_rounded[0]
-result_fk_rounded.position.y = position_rounded[1]
-result_fk_rounded.position.z = position_rounded[2]
-result_fk_rounded.orientation.x = orientation_rounded[0]
-result_fk_rounded.orientation.y = orientation_rounded[1]
-result_fk_rounded.orientation.z = orientation_rounded[2]
-result_fk_rounded.orientation.w = orientation_rounded[3]
-
-rx, ry, rz = tf.euler_from_quaternion([ result_fk_rounded.orientation.x, 
-                                        result_fk_rounded.orientation.y, 
-                                        result_fk_rounded.orientation.z, 
-                                        result_fk_rounded.orientation.w])
-
 print("#-------------------------------------------------------------------------------------------------")
-# Tampilkan hasil yang sudah dibulatkan
 print("HASIL FORWARD KINEMATICS")
 print()
-print("ROS Pose (Quaternion):")
-print("position: ")
-print("  x:", result_fk_rounded.position.x)
-print("  y:", result_fk_rounded.position.y)
-print("  z:", result_fk_rounded.position.z)
-print("orientation: ")
-print("  x:", result_fk_rounded.orientation.x)
-print("  y:", result_fk_rounded.orientation.y)
-print("  z:", result_fk_rounded.orientation.z)
-print("  w:", result_fk_rounded.orientation.w)
-print()
-print("UR Pose[x, y, z, rx, ry,rz] (Euler):")
-print([ round(result_fk_rounded.position.x, 6), round(result_fk_rounded.position.y, 6), round(result_fk_rounded.position.z, 6),
-        round(rx, 6), round(ry, 6), round(rz, 6)])
+print("ROS Pose Forward Kinematics (Hitung Manual):")
+print(result_fk)
 print()
 #print('**************** INPUT INVERSE KINEMATICS')
 print('Hasil Forward Kinematics (Matriks Transformasi Homogen) ')
@@ -348,17 +312,89 @@ desired_pos = np.array(result_htm)
 result_ik = invKine(desired_pos)
 result_ik_degrees = np.degrees(result_ik)
 
+"""# Tampilkan hasil
+print("Solusi inverse kinematics (radian):")
+print(result_ik)
+print("Solusi inverse kinematics (derajat):")
+print(result_ik_degrees)"""
+
 result_ik_transposed_radian= np.transpose(result_ik)
 result_ik_transposed_degree = np.transpose(result_ik_degrees)
 
-# Round the inverse kinematics results to six decimal places
-result_ik_rounded = np.round(result_ik_transposed_radian, 6)
-result_ik_degree_rounded = np.round(result_ik_transposed_degree, 6)
+# Tampilkan hasil
+print("Solusi inverse kinematics (dalam Radian):")
+print(result_ik_transposed_radian)
+print()
+print("Solusi inverse kinematics (dalam derajat):")
+print(result_ik_transposed_degree)
+print()
 
-# Tampilkan hasil yang sudah dibulatkan
-print("8 Solusi inverse kinematics (dalam Radian):")
-print(result_ik_rounded)
+# Inisialisasi list untuk menyimpan pose kartesian
+print('Hasil IK Transpose (List)')
+result_ik_transposed_list_degree = result_ik_transposed_degree.tolist()
+result_ik_transposed_list_radian = result_ik_transposed_radian.tolist()
+"""print(result_ik_transposed_list)"""
+# Result in Degree
+print('8 Solusi IK (Derajat)')
+print("[")
+for sublist in result_ik_transposed_list_degree:
+    print("[", end=" ")
+    for i, value in enumerate(sublist):
+        # Print float values with higher precision
+        if isinstance(value, float):
+            if i == len(sublist) - 1:
+                print("{:.15f}".format(value), end=" ")
+            else:
+                print("{:.15f}".format(value), end=", ")
+        else:
+            print(value, end=", ")
+    print("],")  # Add a closing square bracket and comma for each sublist
+print("]")
 print()
-print("8 Solusi inverse kinematics (dalam derajat):")
-print(result_ik_degree_rounded)
+
+
+#Result In Radian
+print("#-------------------------------------------------------------------------------------------------")
+print("Hasil Inverse Kinematics (Hitung Manual):")
+print('8 Solusi IK (Radian)')
+print("[")
+for sublist in result_ik_transposed_radian:
+    print("[", end=" ")
+    for i, value in enumerate(sublist):
+        # Print float values with higher precision
+        if isinstance(value, float):
+            if i == len(sublist) - 1:
+                print("{:.15f}".format(value), end=" ")
+            else:
+                print("{:.15f}".format(value), end=", ")
+        else:
+            print(value, end=", ")
+    print("],")  # Add a closing square bracket and comma for each sublist
+print("]")  
+
+d1 = 0.1519 
+d2 = d3 = 0
+d4 = 0.11235
+d5 = 0.08535
+d6 = 0.0819
+
+# a (unit: mm)
+a1 = a4 = a5 = a6 = 0
+a2 = -0.24365
+a3 = -0.21325
+
+# List type of D-H parameter
+d = np.array([d1, d2, d3, d4, d5, d6]) # unit: mm
+a = np.array([a1, a2, a3, a4, a5, a6]) # unit: mm
+alpha = np.array([pi/2, 0, 0, pi/2, -pi/2, 0]) # unit: radian
+
+print("ROS Pose hasil forward kinematics dari nilai sendi hasil inverse kinematics:")
+for index, solution in enumerate(result_ik_transposed_list_degree, start=1):
+    result_cartesian = fwd_kin(solution, i_unit='d', o_unit='p')
+    print(f"Solution {index}:")
+    print(result_cartesian)
+    print()
+"""
 print()
+print(result_ik_transposed_list)"""
+
